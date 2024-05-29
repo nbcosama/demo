@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Image Upload</title>
+</head>
+<body>
+    {% for success in success %}
+   {{ success}}
+    {% endfor %}
+    {% for image in allimages %}
+    <img src="{{ image.image.url }}" alt="Uploaded Image">
+    {% endfor %}
+    <canvas id="canvas" style="display: none;"></canvas>
+    <img id="preview" src="#" alt="Image Preview" style="display: none; max-width: 300px; margin-top: 10px;">
+    <form id="imageForm" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+        <video id="video" width="400" height="300" autoplay></video>
+        <br>
+        <button type="button" onclick="captureImage()">Capture</button>
+        <button type="button" onclick="uploadImage()">Upload</button>
+        <button type="button" onclick="closeCamera()">Close Camera</button>
+         <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>ID</th>
+            <th>Name</th>
+            <!-- Add other columns as needed -->
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in allstudent %}
+            <tr>
+              <td> <input type="checkbox" name="selected_students" value="{{ student.id }}"></td>
+              <td>{{ student.id }}</td>
+              <td>{{ student.first_name }}{{ student.last_name }}</td>
+              <!-- Add other columns as needed -->
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type></button>
+    </form>
+    
+    <script src="{% static 'your_js_file.js' %}"></script>
+
+
+   
+</body>
+<script>
+    let video = document.getElementById('video');
+    let canvas = document.getElementById('canvas');
+    let context = canvas.getContext('2d');
+    let preview = document.getElementById('preview');
+    let stream;
+
+    // Initialize the camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch(function (err) {
+            console.log("An error occurred: " + err);
+        });
+
+    function captureImage() {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(function (blob) {
+            preview.src = URL.createObjectURL(blob);
+            preview.style.display = 'block';
+        });
+    }
+
+    function uploadImage() {
+        // Use FormData to send the captured image to the server
+        let formData = new FormData();
+        canvas.toBlob(function (blob) {
+            formData.append('image', blob, 'captured_image.png');
+
+
+
+            // Gather selected student IDs
+        let selectedStudents = [];
+        document.querySelectorAll('input[name="selected_students"]:checked').forEach(function(checkbox) {
+            selectedStudents.push(checkbox.value);
+        });
+        
+        // Add selected student IDs to the form data
+        formData.append('selected_students', JSON.stringify(selectedStudents));
+
+
+            // Add CSRF token to the form data
+            formData.append('csrfmiddlewaretoken', document.getElementsByName('csrfmiddlewaretoken')[0].value);
+            // Use fetch or another method to send the image data to your Django view
+            fetch('/upload_image/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        
+    }
+    function closeCamera() {
+        console.log('Closing camera...');
+        if (window.stream) {
+            let tracks = window.stream.getTracks();
+            tracks.forEach(track => track.stop());
+            console.log('Camera closed successfully.');
+        } else {
+            console.log('No camera stream to close.');
+        }
+        video.srcObject = null;
+    }
+    
+</script>
+</html>

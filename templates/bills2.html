@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Finance Management System</title>
+    
+  </head>
+  <body>
+    <!-- {% for i in data %}
+        <li>{{i.name}}</li>
+        <li>{{i.bill_name}}</li>
+        <li>{{i.total_amount}}</li>
+        <li>{{i.class}}</li>
+        <br><br>
+    {% endfor %} -->
+
+    <table class="table table-light">
+        <thead> 
+         
+          <tr>
+            <th scope="col">Student Name</th>
+            <th scope="col">Class</th>
+            <th scope="col">Fee Type</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">paid</th>
+            <th scope="col">Disc</th>
+            <th scope="col">Remaining</th>
+            <th scope="col">Action</th>
+           
+           
+          </tr>
+        </thead>
+        <tbody> 
+            {% for i in data %}
+          <tr>
+            <!-- <th scope="row"> {{i.bill_id}}</th>
+            <td> {{i.name}}</td>
+            <td> {{i.class}}</td>
+            <td> {{i.bill_name}}</td>
+            <td> {{i.total_amount}}</td> -->
+          
+            <form method="post">
+                {% csrf_token %}
+              <td><input type="text" value="{{i.name}}" class="form-control" id="stname" name="stname" placeholder="Amount" > </td>
+              <td><input type="text" value="{{i.class}}" class="form-control" id="classname" name="classname" placeholder="Amount" > </td>
+              <td><input type="text" value="{{i.bill_name}}" class="form-control" id="installmentname" name="installmentname" placeholder="Amount" > </td>
+              <td><input type="text" value="{{i.total_amount}}" class="form-control" id="feeamount" name="feeamount" placeholder="Amount" > </td>
+              <td><input type="text"  class="form-control" id="paidfee" name="paidfee" placeholder="Amount"> </td>
+              <td><input type="text"  class="form-control" id="disamount" name="disamount" placeholder="Amount"> </td>
+              <td><input type="text"  class="form-control" id="remainingamount" name="remainingamount" placeholder="Amount"> </td>
+              <td> <button type="submit" class="btn btn-primary">Submit</button> </td>
+    
+            </form>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</body>
+</html>
